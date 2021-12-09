@@ -1,4 +1,4 @@
-pub fn run_part<'a, A>(part: usize, inputs: &'a str, parse: fn(&'a str) -> A, part1: fn(&A) -> usize, part2: fn(&A) -> usize) -> usize {
+pub fn run_part<'a, A>(part: u8, inputs: &'a str, parse: fn(&'a str) -> A, part1: fn(&A) -> u64, part2: fn(&A) -> u64) -> u64 {
   let parsed = parse(inputs);
   match part {
     1 => part1(&parsed),
@@ -7,12 +7,12 @@ pub fn run_part<'a, A>(part: usize, inputs: &'a str, parse: fn(&'a str) -> A, pa
   }
 }
 
-pub fn vec_of_usize_one_line(str: &str) -> Vec<usize> {
-  str.split(",").map(|x| x.parse::<usize>().unwrap()).collect()
+pub fn vec_of_u64_one_line(str: &str) -> Vec<u64> {
+  str.split(",").map(|x| x.parse::<u64>().unwrap()).collect()
 }
 
-pub fn vec_of_usize(str: &str) -> Vec<usize> {
-  str.lines().map(|x| x.parse::<usize>().unwrap()).collect()
+pub fn vec_of_u64(str: &str) -> Vec<u64> {
+  str.lines().map(|x| x.parse::<u64>().unwrap()).collect()
 }
 
 pub fn vec_of_str<'a>(str: &'a str) -> Vec<&'a str> {

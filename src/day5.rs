@@ -1,6 +1,6 @@
 use crate::common::*;
 
-pub fn run(part: usize) -> usize {
+pub fn run(part: u8) -> u64 {
   let input_lines = include_str!("../inputs/day5.txt");
   run_part(part, input_lines, vec_of_str, part1, part2)
 }
@@ -10,16 +10,16 @@ struct Line {
   end: (usize, usize),
 }
 
-pub fn part1(inputs: &Vec<&str>) -> usize {
+pub fn part1(inputs: &Vec<&str>) -> u64 {
   solve(inputs, false)
 }
 
-pub fn part2(inputs: &Vec<&str>) -> usize {
+pub fn part2(inputs: &Vec<&str>) -> u64 {
   solve(inputs, true)
 }
 
-pub fn solve(inputs: &Vec<&str>, allow_diagonals: bool) -> usize {
-  let mut sea_bed = vec![vec![0usize; 1000]; 1000];
+pub fn solve(inputs: &Vec<&str>, allow_diagonals: bool) -> u64 {
+  let mut sea_bed = vec![vec![0u64; 1000]; 1000];
   let lines = parse(&inputs);
   for line in lines {
     if line.start.0 == line.end.0 {
@@ -51,7 +51,7 @@ pub fn solve(inputs: &Vec<&str>, allow_diagonals: bool) -> usize {
     }
   }
   sea_bed.iter().map(|row| {
-    row.iter().filter(|&&n| n >= 2).count()
+    row.iter().filter(|&&n| n >= 2).count() as u64
   }).sum()
 }
 

@@ -1,6 +1,6 @@
 use crate::common::*;
 
-pub fn run(part: usize) -> usize {
+pub fn run(part: u8) -> u64 {
   let input_lines = include_str!("../inputs/day8.txt");
   run_part(part, input_lines, vec_of_str, part1, part2)
 }
@@ -11,15 +11,15 @@ struct Entry {
   outputs: Vec<String>,
 }
 
-pub fn part1(entries: &Vec<&str>) -> usize {
+pub fn part1(entries: &Vec<&str>) -> u64 {
   let entries = entries.iter().map(|x| parse(&x)).collect::<Vec<_>>();
   entries.iter()
     .flat_map(|e| &e.outputs)
     .filter(|o| o.len() == 2 || o.len() == 3 || o.len() == 4 || o.len() == 7)
-    .count()
+    .count() as u64
 }
 
-pub fn part2(entries: &Vec<&str>) -> usize {
+pub fn part2(entries: &Vec<&str>) -> u64 {
   let entries = entries.iter().map(|x| parse(&x)).collect::<Vec<_>>();
   entries.iter().map(|entry| {
     let pick_one = |len| {
@@ -60,7 +60,7 @@ pub fn part2(entries: &Vec<&str>) -> usize {
       }
     }).collect::<Vec<_>>();
     digits[0] * 1000 + digits[1] * 100 + digits[2] * 10 + digits[3]
-  }).sum()
+  }).sum::<u64>()
 }
 
 fn parse(e: &str) -> Entry {

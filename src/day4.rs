@@ -1,21 +1,21 @@
 use crate::common::*;
 
-pub fn run(part: usize) -> usize {
+pub fn run(part: u8) -> u64 {
   let input_lines = include_str!("../inputs/day4.txt");
   run_part(part, input_lines, vec_of_str, part1, part2)
 }
 
-pub fn part1(inputs: &Vec<&str>) -> usize {
-  let get_score = |cards: &Vec<Card>, n: usize| {
+pub fn part1(inputs: &Vec<&str>) -> u64 {
+  let get_score = |cards: &Vec<Card>, n| {
     cards.iter().find(|c| c.is_winner())
       .map(|w| n * w.sum_unmarked())
   };
   solve(&inputs, get_score)
 }
 
-pub fn part2(inputs: &Vec<&str>) -> usize {
+pub fn part2(inputs: &Vec<&str>) -> u64 {
   let mut last_board = 0;
-  let get_score = |cards: &Vec<Card>, n: usize| {
+  let get_score = |cards: &Vec<Card>, n| {
     let non_winners = cards.iter()
       .enumerate()
       .filter(|(_, c)| !c.is_winner())
@@ -33,7 +33,7 @@ pub fn part2(inputs: &Vec<&str>) -> usize {
   solve(&inputs, get_score)
 }
 
-fn solve<'a>(inputs: &'a Vec<&str>, mut get_score: impl FnMut(&Vec<Card>, usize) -> Option<usize>) -> usize {
+fn solve<'a>(inputs: &'a Vec<&str>, mut get_score: impl FnMut(&Vec<Card>, u64) -> Option<u64>) -> u64 {
   let (numbers, mut cards) = parse(inputs);
   for n in numbers {
     for card in &mut cards {
@@ -49,16 +49,16 @@ fn solve<'a>(inputs: &'a Vec<&str>, mut get_score: impl FnMut(&Vec<Card>, usize)
 
 #[derive(Debug)]
 struct Card {
-  numbers: Vec<Vec<usize>>,
+  numbers: Vec<Vec<u64>>,
   marks: Vec<u8>,
 }
 
 impl Card {
-  fn new(numbers: Vec<Vec<usize>>) -> Card {
+  fn new(numbers: Vec<Vec<u64>>) -> Card {
     Card {numbers, marks: vec![0; 5]}
   }
 
-  fn mark(&mut self, called_num: usize) {
+  fn mark(&mut self, called_num: u64) {
     for (mark, row) in self.marks.iter_mut().zip(&self.numbers) {
       for (col, &num) in row.iter().enumerate() {
         if num == called_num {
@@ -69,14 +69,14 @@ impl Card {
   }
 
   fn is_winner(&self) -> bool {
-    self.marks.iter().any(|&row| row == 31u8) || self.has_winning_col()
+    self.marks.iter().any(|&row| row == 31) || self.has_winning_col()
   }
 
   fn has_winning_col(&self) -> bool {
     (0..5).any(|col| self.marks.iter().all(|mark_row| mark_row & 1 << col != 0))
   }
 
-  fn sum_unmarked(&self) -> usize {
+  fn sum_unmarked(&self) -> u64 {
     let mut sum = 0;
     for (mark, nums_row) in self.marks.iter().zip(&self.numbers) {
       for (col, &num) in nums_row.iter().enumerate() {
@@ -89,11 +89,11 @@ impl Card {
   }
 }
 
-fn parse(inputs: &Vec<&str>) -> (Vec<usize>, Vec<Card>) {
-  let numbers = inputs[0].split(",").map(|x| x.parse::<usize>().unwrap()).collect();
+fn parse(inputs: &Vec<&str>) -> (Vec<u64>, Vec<Card>) {
+  let numbers = inputs[0].split(",").map(|x| x.parse::<u64>().unwrap()).collect();
   let inputs = inputs.iter().skip(2)
       .filter(|line| !line.is_empty())
-      .map(|line| line.split_ascii_whitespace().map(|x| x.parse::<usize>().unwrap()).collect::<Vec<_>>())
+      .map(|line| line.split_ascii_whitespace().map(|x| x.parse::<u64>().unwrap()).collect::<Vec<_>>())
       .collect::<Vec<_>>()
       .chunks(5)
       .map(|nums| Card::new(nums.to_vec()))

@@ -1,18 +1,18 @@
 use crate::common::*;
 
-pub fn run(part: usize) -> usize {
+pub fn run(part: u8) -> u64 {
   let input_lines = include_str!("../inputs/day2.txt");
   run_part(part, input_lines, vec_of_str, part1, part2)
 }
 
 #[derive(Default, Debug)]
 struct Position {
-  depth: usize,
-  x: usize,
-  aim: usize,
+  depth: u32,
+  x: u32,
+  aim: u32,
 }
 
-pub fn part1(inputs: &Vec<&str>) -> usize {
+pub fn part1(inputs: &Vec<&str>) -> u64 {
   fn next_position(p: Position, cmd: &str) -> Position {
     apply_command(
       cmd, 
@@ -24,7 +24,7 @@ pub fn part1(inputs: &Vec<&str>) -> usize {
   solve(inputs, next_position)
 }
 
-pub fn part2(inputs: &Vec<&str>) -> usize {
+pub fn part2(inputs: &Vec<&str>) -> u64 {
   fn next_position(p: Position, cmd: &str) -> Position {
     apply_command(
       cmd, 
@@ -36,19 +36,19 @@ pub fn part2(inputs: &Vec<&str>) -> usize {
   solve(inputs, next_position)
 }
 
-fn solve(inputs: &Vec<&str>, next_position: fn(Position, &str) -> Position) -> usize {
+fn solve(inputs: &Vec<&str>, next_position: fn(Position, &str) -> Position) -> u64 {
   let final_pos = inputs.iter().fold(Position::default(), |p, &s| next_position(p, s));
-  final_pos.x * final_pos.depth
+  (final_pos.x * final_pos.depth).into()
 }
 
 fn apply_command(
     command: &str, 
-    forward: impl Fn(usize) -> Position,
-    up: impl Fn(usize) -> Position,
-    down: impl Fn(usize) -> Position,
+    forward: impl Fn(u32) -> Position,
+    up: impl Fn(u32) -> Position,
+    down: impl Fn(u32) -> Position,
   ) -> Position {
   let words = command.split(' ').collect::<Vec<_>>();
-  let number = words[1].parse::<usize>().unwrap();
+  let number = words[1].parse::<u32>().unwrap();
   match words[0] {
     "forward" => forward(number),
     "up" => up(number),

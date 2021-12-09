@@ -4,7 +4,7 @@ use criterion::{criterion_group, criterion_main, Criterion};
 
 fn bench_day1(c: &mut Criterion) {
   let input = include_str!("../inputs/day1.txt");
-  let values = vec_of_usize(input);
+  let values = vec_of_u64(input);
   c.bench_function("day 1 part 1", |b| b.iter(|| day1::part1(&values)));
   c.bench_function("day 1 part 2", |b| b.iter(|| day1::part2(&values)));
 }
@@ -39,14 +39,14 @@ fn bench_day5(c: &mut Criterion) {
 
 fn bench_day6(c: &mut Criterion) {
   let input = include_str!("../inputs/day6.txt");
-  let values = vec_of_usize_one_line(input);
+  let values = vec_of_u64_one_line(input);
   c.bench_function("day 6 part 1", |b| b.iter(|| day6::part1(&values)));
   c.bench_function("day 6 part 2", |b| b.iter(|| day6::part2(&values)));
 }
 
 fn bench_day7(c: &mut Criterion) {
   let input = include_str!("../inputs/day7.txt");
-  let values = vec_of_usize_one_line(input);
+  let values = vec_of_u64_one_line(input);
   c.bench_function("day 7 part 1", |b| b.iter(|| day7::part1(&values)));
   c.bench_function("day 7 part 2", |b| b.iter(|| day7::part2(&values)));
 }
