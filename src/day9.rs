@@ -5,91 +5,86 @@ pub fn run(part: u8) -> u64 {
   run_part(part, input_lines, vec_of_rows_of_digits, part1, part2)
 }
 
-struct Matrix {
-  m: Vec<Vec<u8>>,
+pub fn part1(map: &Vec<Vec<u8>>) -> u64 { 
+  let map = HeightMap::new(map);
+  map.low_points().iter().map(|(_, _, value)| value + 1).sum()
+}
+
+pub fn part2(map: &Vec<Vec<u8>>) -> u64 {
+  let map = HeightMap::new(map);
+  let mut basin_sizes = map.low_points()
+    .iter()
+    .map(|(x, y, _)| map.find_basin_size(*x, *y))
+    .collect::<Vec<_>>();
+  (basin_sizes.len()-3..=basin_sizes.len()-1)
+    .map(|i| *basin_sizes.select_nth_unstable(i).1 as u64)
+    .product()
+}
+
+struct HeightMap<'a> {
+  m: &'a Vec<Vec<u8>>,
   x_max: usize,
   y_max: usize,
 }
 
-impl Matrix {
-  fn new(m: Vec<Vec<u8>>) -> Matrix {
+impl <'a> HeightMap<'a> {
+  fn new(m: &'a Vec<Vec<u8>>) -> HeightMap {
     let x_max = m[0].len();
     let y_max = m.len();
-    Matrix { m, x_max, y_max }
+    HeightMap { m, x_max, y_max }
   }
 
-  fn at(&self, x: usize, y: usize) -> u8 {
-    self.m[y][x]
+  fn at(&self, p: (usize, usize)) -> u8 {
+    self.m[p.1][p.0]
   }
 
+  fn low_points(&self) -> Vec<(usize, usize, u64)> {
+    (0..self.y_max).flat_map(|y| {
+      (0..self.x_max).filter_map(move |x| {
+        let value = self.at((x, y)) as u64;
+        let neighbours = self.neighbours(x, y);
+        let min_neighbours = neighbours.iter()
+          .map(|&p| self.at(p))
+          .min()
+          .unwrap();
+          if value < min_neighbours.into() {
+            Some((x, y, value))
+          } else {
+            None
+          }
+      })
+    }).collect()
+  }
+
+  fn find_basin_size(&self, x: usize, y: usize) -> usize {
+    use std::collections::*;
+    let mut filled = HashSet::new();
+    let mut q = VecDeque::new();
+    q.push_back((x, y));
+    while let Some((x, y)) = q.pop_front() {
+      if filled.insert((x, y)) {
+        let neighbours = self.neighbours(x, y);
+        let basin = neighbours
+          .iter()
+          .filter(|&&p| self.at(p) != 9);
+        q.extend(basin);  
+      }
+    }
+    filled.len()
+  }
+    
   fn neighbours(&self, x: usize, y: usize) -> Vec<(usize, usize)> {
-    let mut neighbours = vec![];
     const OFFSETS: &[(isize, isize); 4] = &[(-1, 0), (1, 0), (0, -1), (0, 1)];
-    for (dx, dy) in OFFSETS {
+    OFFSETS.iter().filter_map(|(dx, dy)| {
       let new_x = (x as isize) + dx;
       let new_y = (y as isize) + dy;
-      if new_x >= 0 && new_x < self.x_max as isize && new_y >= 0 && new_y < self.y_max as isize {
-        let pt = (new_x as usize, new_y as usize);
-        neighbours.push(pt);
-      } 
-    }
-    neighbours
-  }
-}
-
-pub fn part1(map: &Vec<Vec<u8>>) -> u64 { 
-  let map = Matrix::new(map.clone());
-  let mut sum = 0;
-  for_low_points(&map, &mut |_, _, value| {
-    sum += 1 + value;
-  });
-  sum
-}
-
-pub fn part2(map: &Vec<Vec<u8>>) -> u64 {
-  let map = Matrix::new(map.clone());
-  let mut basin_sizes = vec![];
-  for_low_points(&map, &mut |x, y, _| {
-    let basin = find_basin_size(&map, x, y);
-    basin_sizes.push(basin);
-  });
-  basin_sizes.sort();
-  basin_sizes.reverse();
-  basin_sizes.iter()
-    .take(3)
-    .product()
-}
-
-fn find_basin_size(map: &Matrix, x: usize, y: usize) -> u64 {
-  use std::collections::*;
-  let mut filled = HashSet::new();
-  let mut q = VecDeque::new();
-  q.push_back((x, y));
-  while let Some((x, y)) = q.pop_front() {
-    if filled.insert((x, y)) {
-      let neighbours = map.neighbours(x, y);
-      let basin = neighbours
-        .iter()
-        .filter(|p| map.at(p.0, p.1) != 9);
-      q.extend(basin);  
-    }
-  }
-  filled.len() as u64
-}
-
-fn for_low_points(map: &Matrix, f: &mut impl FnMut(usize, usize, u64)) {
-  for y in 0..map.y_max {
-    for x in 0..map.x_max {
-      let value = map.at(x, y) as u64;
-      let neighbours = map.neighbours(x, y);
-      let min_neighbours = neighbours.iter()
-        .map(|&(x, y)| map.at(x, y))
-        .min()
-        .unwrap();
-      if value < min_neighbours.into() {
-        f(x, y, value)
+      if new_x >= 0 && new_x < self.x_max as isize && 
+         new_y >= 0 && new_y < self.y_max as isize {
+        Some((new_x as usize, new_y as usize))
+      } else {
+        None
       }
-    }         
+    }).collect()
   }
 }
 
