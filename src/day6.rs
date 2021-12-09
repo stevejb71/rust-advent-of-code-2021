@@ -1,8 +1,10 @@
+extern crate nalgebra as na;
 use crate::common::*;
+use na::{SMatrix, SVector};
 
 pub fn run(part: usize) -> usize {
   let input_lines = include_str!("../inputs/day6.txt");
-  run_part(part, input_lines, vec_of_usize, part1, part2)
+  run_part(part, input_lines, vec_of_usize_one_line, part1, part2)
 }
 
 pub fn part1(ages: &Vec<usize>) -> usize {
@@ -14,16 +16,41 @@ pub fn part2(ages: &Vec<usize>) -> usize {
 }
 
 fn predict_population(ages: &Vec<usize>, days: usize) -> usize {
-  let mut num_by_age = vec![0; 9];
+  let update = pow(transition_matrix(), days);
+  let mut num_by_age = SVector::<usize, 9>::zeros();
   for &age in ages {
     num_by_age[age] += 1;
   }
-  for day in 1..=days {
-    let new_fish = num_by_age[(day - 1) % 9];
-    num_by_age[(day + 6) % 9] += new_fish;
-    num_by_age[(day + 8) % 9] = new_fish;
+  let result = update * num_by_age;
+  result.iter().sum()
+}
+
+fn pow(m: SMatrix<usize, 9, 9>, n: usize) -> SMatrix<usize, 9, 9> {
+  let mut result = m;
+  if n == 256 {
+    for _ in 1..=8 {
+      result *= result;
+    }
+  } else {
+    for _ in 1..n {
+      result *= m;
+    }
   }
-  num_by_age.iter().sum()
+  result
+}
+
+fn transition_matrix() -> SMatrix<usize, 9, 9> {
+  SMatrix::<usize, 9, 9>::from_row_slice(&[
+    0, 1, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 1, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 1, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 1, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 1, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 1, 0, 0,
+    1, 0, 0, 0, 0, 0, 0, 1, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 1,
+    1, 0, 0, 0, 0, 0, 0, 0, 0,
+  ])
 }
 
 #[cfg(test)]

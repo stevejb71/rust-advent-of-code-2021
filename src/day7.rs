@@ -2,7 +2,7 @@ use crate::common::*;
 
 pub fn run(part: usize) -> usize {
   let input_lines = include_str!("../inputs/day7.txt");
-  run_part(part, input_lines, vec_of_usize, part1, part2)
+  run_part(part, input_lines, vec_of_usize_one_line, part1, part2)
 }
 
 pub fn part1(xs: &Vec<usize>) -> usize {

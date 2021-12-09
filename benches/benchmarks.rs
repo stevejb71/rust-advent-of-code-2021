@@ -39,14 +39,14 @@ fn bench_day5(c: &mut Criterion) {
 
 fn bench_day6(c: &mut Criterion) {
   let input = include_str!("../inputs/day6.txt");
-  let values = vec_of_usize(input);
+  let values = vec_of_usize_one_line(input);
   c.bench_function("day 6 part 1", |b| b.iter(|| day6::part1(&values)));
   c.bench_function("day 6 part 2", |b| b.iter(|| day6::part2(&values)));
 }
 
 fn bench_day7(c: &mut Criterion) {
   let input = include_str!("../inputs/day7.txt");
-  let values = vec_of_usize(input);
+  let values = vec_of_usize_one_line(input);
   c.bench_function("day 7 part 1", |b| b.iter(|| day7::part1(&values)));
   c.bench_function("day 7 part 2", |b| b.iter(|| day7::part2(&values)));
 }
@@ -65,5 +65,8 @@ fn bench_day9(c: &mut Criterion) {
   c.bench_function("day 9 part 2", |b| b.iter(|| day9::part2(&values)));
 }
 
-criterion_group!(benches, bench_day1, bench_day2, bench_day3, bench_day4, bench_day5, bench_day6, bench_day7, bench_day8, bench_day9);
+criterion_group!(benches, 
+  bench_day1, bench_day2, bench_day3, bench_day4, bench_day5, bench_day6, bench_day7, 
+  bench_day8, bench_day9
+);
 criterion_main!(benches);

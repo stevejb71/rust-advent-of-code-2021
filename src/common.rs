@@ -7,6 +7,10 @@ pub fn run_part<'a, A>(part: usize, inputs: &'a str, parse: fn(&'a str) -> A, pa
   }
 }
 
+pub fn vec_of_usize_one_line(str: &str) -> Vec<usize> {
+  str.split(",").map(|x| x.parse::<usize>().unwrap()).collect()
+}
+
 pub fn vec_of_usize(str: &str) -> Vec<usize> {
   str.lines().map(|x| x.parse::<usize>().unwrap()).collect()
 }
