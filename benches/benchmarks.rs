@@ -79,8 +79,15 @@ fn bench_day11(c: &mut Criterion) {
   c.bench_function("day 11 part 2", |b| b.iter(|| day11::part2(&values)));
 }
 
+fn bench_day12(c: &mut Criterion) {
+  let input = include_str!("../inputs/day12.txt");
+  let values = vec_of_u8_lines_from_digits(input);
+  c.bench_function("day 12 part 1", |b| b.iter(|| day12::part1(&values)));
+  c.bench_function("day 12 part 2", |b| b.iter(|| day12::part2(&values)));
+}
+
 criterion_group!(benches, 
   bench_day1,  bench_day2,  bench_day3,  bench_day4,  bench_day5,  bench_day6,  bench_day7, 
-  bench_day8,  bench_day9,  bench_day10, bench_day11,
+  bench_day8,  bench_day9,  bench_day10, bench_day11, bench_day12,
 );
 criterion_main!(benches);
