@@ -6,11 +6,6 @@ pub fn run(part: u8) -> u64 {
   run_part(part, input_lines, vec_of_u8_lines_from_digits, part1, part2)
 }
 
-fn vec_of_u8_lines_from_digits(str: &str) -> Vec<Vec<u8>> {
-  str.lines().map(|l| l.chars().map(|c| c.to_digit(10).unwrap() as u8).collect())
-    .collect()
-}
-
 pub fn part1(lines: &Vec<Vec<u8>>) -> u64 {
   let mut lines = lines.clone();
   let mut flashes = 0;

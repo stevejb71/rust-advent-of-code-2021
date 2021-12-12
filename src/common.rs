@@ -22,3 +22,8 @@ pub fn vec_of_str<'a>(str: &'a str) -> Vec<&'a str> {
 pub fn vec_of_rows_of_digits<'a>(str: &'a str) -> Vec<Vec<u8>> {
   str.lines().map(|s| s.chars().map(|c| c.to_digit(10).unwrap() as u8).collect::<Vec<_>>()).collect()
 }
+
+pub fn vec_of_u8_lines_from_digits(str: &str) -> Vec<Vec<u8>> {
+  str.lines().map(|l| l.chars().map(|c| c.to_digit(10).unwrap() as u8).collect())
+    .collect()
+}
