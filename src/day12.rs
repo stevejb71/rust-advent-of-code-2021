@@ -7,54 +7,76 @@ pub fn run(part: u8) -> u64 {
 }
 
 pub fn part1(lines: &Vec<&str>) -> u64 {
-  fn can_visit(visited: &mut HashSet<Cave>, here: &Cave) -> bool {
-    match here {
-      Cave::Small(_) => visited.insert(here.clone()),
-      _ => true,
+  fn can_visit(visited: Vec<Cave>, here: &Cave) -> (bool, Vec<Cave>) {
+    if here.is_small() {
+      if visited.contains(&here) {
+        (false, visited)
+      } else {
+        let mut visited = visited.clone();
+        visited.push(here.clone());
+        (true, visited)
+      }
+    } else {
+      (true, visited)
     }
   }
   search(lines, can_visit)
+}
+
+fn cave_str_to_index(s: &str) -> u16 {
+  match s {
+    "start" => 0,
+    "end" => 1,
+    _ => {
+      let mut chs = s.chars();
+      let ch1 = chs.next().unwrap() as u16;
+      let ch2 = chs.next().unwrap_or_default() as u16;
+      ch1 * 256 + ch2    
+    }
+  }
 }
 
 #[derive(Clone, Default)]
 struct VisitsTracker {
-  visited: HashSet<Cave>,
+  visited: Vec<Cave>,
   twice: bool,
 }
 
 pub fn part2(lines: &Vec<&str>) -> u64 {
-  fn can_visit(tracker: &mut VisitsTracker, here: &Cave) -> bool {
-    match here {
-      Cave::Small(_) => {
-        let first_time = tracker.visited.insert(here.clone());
-        if first_time {
-          true 
+  fn can_visit(tracker: VisitsTracker, here: &Cave) -> (bool, VisitsTracker) {
+    if here.is_small() {
+      let first_time = !tracker.visited.contains(here);
+      if first_time {
+        let mut tracker = tracker.clone();
+        tracker.visited.push(here.clone());
+        (true, tracker) 
+      } else {
+        if tracker.twice {
+          (false, tracker)
         } else {
-          if tracker.twice {
-            false
-          } else {
-            tracker.twice = true;
-            true
-          }
+          let mut tracker = tracker.clone();
+          tracker.twice = true;
+          (true, tracker)
         }
       }
-      _ => true,
+    } else {
+      (true, tracker)
     }
   }
   search(lines, can_visit)
 }
 
-fn search<V: Clone + Default>(lines: &Vec<&str>, can_visit: fn(&mut V, &Cave) -> bool) -> u64 {
+fn search<V: Clone + Default>(lines: &Vec<&str>, can_visit: fn(V, &Cave) ->  (bool, V)) -> u64 {
   let cave_system = parse(lines);
   let mut q = VecDeque::new();
   q.push_front((Cave::Start, V::default()));
   let mut count = 0;
-  while let Some((here, mut visited)) = q.pop_front() {
+  while let Some((here, visited)) = q.pop_front() {
     if here == Cave::End {
       count += 1;
       continue;
     }
-    let can_visit = can_visit(&mut visited, &here);
+    let (can_visit, visited) = can_visit(visited, &here);
     if can_visit {
       let next_caves = cave_system.next_caves(&here);
       let next_caves_with_visits = next_caves.iter()
@@ -69,8 +91,17 @@ fn search<V: Clone + Default>(lines: &Vec<&str>, can_visit: fn(&mut V, &Cave) ->
 enum Cave {
   Start,
   End,
-  Big(String),
-  Small(String)
+  Big(u16),
+  Small(u16)
+}
+
+impl Cave {
+  fn is_small(&self) -> bool {
+    match self {
+      Cave::Small(_) => true,
+      _ => false,
+    }
+  }
 }
 
 #[derive(Default)]
@@ -111,10 +142,11 @@ fn parse_line(line: &str) -> (Cave, Cave) {
       "end" => Cave::End,
       _ => {
         let ch = s.chars().nth(0).unwrap();
+        let index = cave_str_to_index(s);
         if ch.is_lowercase() {
-          Cave::Small(s.to_owned())
+          Cave::Small(index)
         } else {
-          Cave::Big(s.to_owned())
+          Cave::Big(index)
         }
       }
     }
@@ -161,3 +193,4 @@ mod tests {
     assert_eq!(36, paths);
   }
 }
+

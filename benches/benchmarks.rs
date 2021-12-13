@@ -82,8 +82,10 @@ fn bench_day11(c: &mut Criterion) {
 fn bench_day12(c: &mut Criterion) {
   let input = include_str!("../inputs/day12.txt");
   let values = vec_of_str(input);
-  c.bench_function("day 12 part 1", |b| b.iter(|| day12::part1(&values)));
-  c.bench_function("day 12 part 2", |b| b.iter(|| day12::part2(&values)));
+  c.bench_function("day 12", |b| b.iter(|| day12::part1(&values)));
+  let mut group = c.benchmark_group("day 12 part 2");
+  group.sample_size(20);
+  group.bench_function("part 2", |b| b.iter(|| day12::part2(&values)));
 }
 
 criterion_group!(benches, 
