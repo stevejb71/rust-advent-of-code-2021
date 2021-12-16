@@ -6,23 +6,35 @@ pub fn run(part: u8) -> u64 {
   run_part(part, input_lines, vec_of_str, part1, part2)
 }
 
+struct Vec2D {
+  values: Vec<u8>,
+  width: usize,
+  height: usize,
+}
+
+impl Vec2D {
+  fn at(&self, x: usize, y: usize) -> u8 {
+    self.values[x + y * self.width]
+  }
+}
+
 pub fn part1(lines: &Vec<&str>) -> u64 {
   let cavern = parse(lines);
   find_path_cost(
-    |x, y| { cavern[y][x] }, 
-    cavern[0].len() - 1, 
-    cavern.len() - 1
+    |x, y| { cavern.at(x, y) }, 
+    cavern.width - 1, 
+    cavern.height - 1
   )
 }
 
 pub fn part2(lines: &Vec<&str>) -> u64 {
   let cavern = parse(lines);
-  let width = cavern[0].len();
-  let height = cavern.len();
+  let width = cavern.width;
+  let height = cavern.height;
   let risk_at = |x, y: usize| {
     let x_rep = x / width; 
     let y_rep = y / height;
-    let value = cavern[y % height][x % width] as usize + x_rep + y_rep;
+    let value = cavern.at(x % width, y % height) as usize + x_rep + y_rep;
     if value > 9 {
       (value - 9) as u8
     } else {
@@ -50,24 +62,29 @@ fn find_path_cost(
 
 type Pos = (usize, usize);
 
-fn parse(lines: &Vec<&str>) -> Vec<Vec<u8>> {
-  lines.iter().map(|l| {
-    l.chars().map(|c| c.to_digit(10).unwrap() as u8).collect::<Vec<_>>()
-  }).collect()
+fn parse(lines: &Vec<&str>) -> Vec2D {
+  let values = lines
+    .join("")
+    .chars()
+    .map(|c| c.to_digit(10).unwrap() as u8)
+    .collect();
+  Vec2D { values, width: lines[0].len(), height: lines.len() }
 }
 
-fn successors(risk_at: impl Fn(usize, usize) -> u8, x_max: usize, y_max: usize, (x, y): Pos) -> Vec<(Pos, u64)> {
+fn successors(risk_at: impl Fn(usize, usize) -> u8, x_max: usize, y_max: usize, (x, y): Pos) -> [(Pos, u64); 4] {
   const OFFSETS: [(isize, isize); 4] = [(-1, 0), (1, 0), (0, -1), (0, 1)];
   let x = x as isize;
   let y = y as isize;
   let x_max = x_max as isize;
   let y_max = y_max as isize;
-  let mut successors = vec![];
+  let mut successors = [((0, 0), 100); 4];
+  let mut i = 0;
   for (dx, dy) in &OFFSETS {
     if x + dx >= 0 && x + dx <= x_max && y + dy >= 0 && y + dy <= y_max {
       let next_x = (x + dx) as usize;
       let next_y = (y + dy) as usize;
-      successors.push(((next_x, next_y), risk_at(next_x, next_y) as u64));
+      successors[i] = ((next_x, next_y), risk_at(next_x, next_y) as u64);
+      i += 1;
     }
   }
   successors
