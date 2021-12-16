@@ -109,9 +109,15 @@ fn bench_day15(c: &mut Criterion) {
   c.bench_function("day 15 part 2", |b| b.iter(|| day15::part2(&values)));
 }
 
+fn bench_day16(c: &mut Criterion) {
+  let input = include_str!("../inputs/day16.txt");
+  c.bench_function("day 16 part 1", |b| b.iter(|| day16::part1(input)));
+  c.bench_function("day 16 part 2", |b| b.iter(|| day16::part2(input)));
+}
+
 criterion_group!(benches, 
   bench_day1,  bench_day2,  bench_day3,  bench_day4,  bench_day5,  bench_day6,  bench_day7, 
   bench_day8,  bench_day9,  bench_day10, bench_day11, bench_day12, bench_day13, bench_day14,
-  bench_day15,
+  bench_day15, bench_day16,
 );
 criterion_main!(benches);
