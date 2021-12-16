@@ -115,9 +115,49 @@ fn bench_day16(c: &mut Criterion) {
   c.bench_function("day 16 part 2", |b| b.iter(|| day16::part2(input)));
 }
 
+fn run_all(c: &mut Criterion) {
+  let day13_input = vec_of_str(include_str!("../inputs/day13.txt"));
+  let mut group = c.benchmark_group("ALL");
+  group.sample_size(10);
+  group.bench_function("all", |b| b.iter(|| {
+    day1::run(1);
+    day1::run(2);
+    day2::run(1);
+    day2::run(2);
+    day3::run(1);
+    day3::run(2);
+    day4::run(1);
+    day4::run(2);
+    day5::run(1);
+    day5::run(2);
+    day6::run(1);
+    day6::run(2);
+    day7::run(1);
+    day7::run(2);
+    day8::run(1);
+    day8::run(2);
+    day9::run(1);
+    day9::run(2);
+    day10::run(1);
+    day10::run(2);
+    day11::run(1);
+    day11::run(2);
+    day12::run(1);
+    day12::run(2);
+    day13::part1(&day13_input);
+    day13::part2_noprint(&day13_input);
+    day14::run(1);
+    day14::run(2);
+    day15::run(1);
+    day15::run(2);
+    day16::run(1);
+    day16::run(2);
+  }));
+}
+
 criterion_group!(benches, 
   bench_day1,  bench_day2,  bench_day3,  bench_day4,  bench_day5,  bench_day6,  bench_day7, 
   bench_day8,  bench_day9,  bench_day10, bench_day11, bench_day12, bench_day13, bench_day14,
-  bench_day15, bench_day16,
+  bench_day15, bench_day16, run_all
 );
 criterion_main!(benches);
