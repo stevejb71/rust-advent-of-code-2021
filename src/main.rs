@@ -23,6 +23,7 @@ fn main() {
     15 => day15::run,
     16 => day16::run,
     17 => day17::run,
+    18 => day18::run,
     _ => panic!("Unimplemented")
   };
   let result = run(part);
